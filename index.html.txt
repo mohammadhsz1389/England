@@ -1,0 +1,338 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>اپلیکیشن یادگیری زبان مدرن</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        /* Reset & Base Styles */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        body {
+            background: linear-gradient(135deg, #6e8efb, #a777e3);
+            color: #333;
+            min-height: 100vh;
+            transition: all 0.3s ease;
+        }
+        
+        body.dark-mode {
+            background: linear-gradient(135deg, #1e1e2f, #2a2a40);
+            color: #f0f0f0;
+        }
+        
+        /* Container */
+        .app-container {
+            max-width: 500px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: rgba(255, 255, 255, 0.9);
+            border-radius: 20px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+            min-height: 80vh;
+            position: relative;
+            overflow: hidden;
+            transition: all 0.3s ease;
+        }
+        
+        .dark-mode .app-container {
+            background-color: rgba(30, 30, 47, 0.9);
+        }
+        
+        /* Header */
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 30px;
+            padding-bottom: 10px;
+            border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+        }
+        
+        .dark-mode .header {
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        
+        .header h1 {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: #6e8efb;
+        }
+        
+        .dark-mode .header h1 {
+            color: #a777e3;
+        }
+        
+        .theme-toggle {
+            background: none;
+            border: none;
+            font-size: 1.2rem;
+            cursor: pointer;
+            color: #666;
+        }
+        
+        .dark-mode .theme-toggle {
+            color: #ddd;
+        }
+        
+        /* Flashcard */
+        .flashcard-container {
+            perspective: 1000px;
+            margin-bottom: 30px;
+        }
+        
+        .flashcard {
+            width: 100%;
+            height: 250px;
+            position: relative;
+            transform-style: preserve-3d;
+            transition: transform 0.6s;
+            cursor: pointer;
+            border-radius: 15px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+        }
+        
+        .flashcard.flipped {
+            transform: rotateY(180deg);
+        }
+        
+        .flashcard-front, .flashcard-back {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            backface-visibility: hidden;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+            border-radius: 15px;
+            text-align: center;
+        }
+        
+        .flashcard-front {
+            background: linear-gradient(135deg, #ffffff, #f5f7fa);
+            color: #333;
+        }
+        
+        .dark-mode .flashcard-front {
+            background: linear-gradient(135deg, #2a2a40, #1e1e2f);
+            color: #f0f0f0;
+        }
+        
+        .flashcard-back {
+            background: linear-gradient(135deg, #6e8efb, #a777e3);
+            color: white;
+            transform: rotateY(180deg);
+        }
+        
+        .word {
+            font-size: 2.5rem;
+            margin-bottom: 10px;
+            font-weight: 700;
+        }
+        
+        .translation {
+            font-size: 1.5rem;
+            opacity: 0.8;
+        }
+        
+        .example {
+            margin-top: 20px;
+            font-style: italic;
+            font-size: 1rem;
+            opacity: 0.7;
+        }
+        
+        /* Progress */
+        .progress-container {
+            width: 100%;
+            background-color: #e0e0e0;
+            border-radius: 10px;
+            margin: 20px 0;
+            height: 10px;
+        }
+        
+        .dark-mode .progress-container {
+            background-color: #333;
+        }
+        
+        .progress-bar {
+            height: 100%;
+            border-radius: 10px;
+            background: linear-gradient(90deg, #6e8efb, #a777e3);
+            width: 0%;
+            transition: width 0.3s ease;
+        }
+        
+        /* Buttons */
+        .buttons {
+            display: flex;
+            justify-content: space-between;
+            gap: 10px;
+        }
+        
+        .btn {
+            flex: 1;
+            padding: 12px;
+            border: none;
+            border-radius: 10px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+        }
+        
+        .btn:hover {
+            transform: translateY(-2px);
+        }
+        
+        .btn:active {
+            transform: translateY(0);
+        }
+        
+        .btn-easy {
+            background-color: #4caf50;
+            color: white;
+        }
+        
+        .btn-medium {
+            background-color: #ff9800;
+            color: white;
+        }
+        
+        .btn-hard {
+            background-color: #f44336;
+            color: white;
+        }
+        
+        /* Animation */
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        .fade-in {
+            animation: fadeIn 0.5s ease-out;
+        }
+    </style>
+</head>
+<body>
+    <div class="app-container">
+        <div class="header">
+            <h1>یادگیری زبان مدرن</h1>
+            <button class="theme-toggle" id="themeToggle">
+                <i class="fas fa-moon"></i>
+            </button>
+        </div>
+        
+        <div class="progress-container">
+            <div class="progress-bar" id="progressBar"></div>
+        </div>
+        
+        <div class="flashcard-container">
+            <div class="flashcard" id="flashcard">
+                <div class="flashcard-front fade-in">
+                    <div class="word" id="word">Hello</div>
+                    <div class="translation">کلمه را لمس کنید</div>
+                </div>
+                <div class="flashcard-back fade-in">
+                    <div class="word" id="translation">سلام</div>
+                    <div class="example" id="example">مثال: Hello, how are you?</div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="buttons">
+            <button class="btn btn-easy" id="btnEasy">
+                <i class="fas fa-smile"></i> آسان
+            </button>
+            <button class="btn btn-medium" id="btnMedium">
+                <i class="fas fa-meh"></i> متوسط
+            </button>
+            <button class="btn btn-hard" id="btnHard">
+                <i class="fas fa-frown"></i> سخت
+            </button>
+        </div>
+    </div>
+
+    <script>
+        // دیتای نمونه برای فلش‌کارت‌ها
+        const words = [
+            { word: "Hello", translation: "سلام", example: "Hello, how are you?" },
+            { word: "Goodbye", translation: "خداحافظ", example: "Goodbye, see you tomorrow!" },
+            { word: "Thank you", translation: "متشکرم", example: "Thank you for your help." },
+            { word: "Please", translation: "لطفاً", example: "Please sit down." },
+            { word: "Sorry", translation: "متأسفم", example: "I'm sorry for being late." },
+        ];
+        
+        let currentCard = 0;
+        let progress = 0;
+        
+        // DOM Elements
+        const flashcard = document.getElementById('flashcard');
+        const wordElement = document.getElementById('word');
+        const translationElement = document.getElementById('translation');
+        const exampleElement = document.getElementById('example');
+        const progressBar = document.getElementById('progressBar');
+        const themeToggle = document.getElementById('themeToggle');
+        const body = document.body;
+        
+        // نمایش فلش‌کارت فعلی
+        function showCard() {
+            wordElement.textContent = words[currentCard].word;
+            translationElement.textContent = words[currentCard].translation;
+            exampleElement.textContent = words[currentCard].example;
+            
+            // ریست انیمیشن
+            flashcard.classList.remove('flipped');
+            document.querySelectorAll('.flashcard-front, .flashcard-back').forEach(el => {
+                el.classList.remove('fade-in');
+                void el.offsetWidth; // Trigger reflow
+                el.classList.add('fade-in');
+            });
+            
+            // آپدیت پیشرفت
+            progress = (currentCard / words.length) * 100;
+            progressBar.style.width = `${progress}%`;
+        }
+        
+        // کلیک روی فلش‌کارت برای برگرداندن آن
+        flashcard.addEventListener('click', () => {
+            flashcard.classList.toggle('flipped');
+        });
+        
+        // دکمه‌های دشواری
+        document.getElementById('btnEasy').addEventListener('click', nextCard);
+        document.getElementById('btnMedium').addEventListener('click', nextCard);
+        document.getElementById('btnHard').addEventListener('click', nextCard);
+        
+        function nextCard() {
+            currentCard = (currentCard + 1) % words.length;
+            showCard();
+        }
+        
+        // تغییر تم تاریک/روشن
+        themeToggle.addEventListener('click', () => {
+            body.classList.toggle('dark-mode');
+            const icon = themeToggle.querySelector('i');
+            if (body.classList.contains('dark-mode')) {
+                icon.classList.replace('fa-moon', 'fa-sun');
+            } else {
+                icon.classList.replace('fa-sun', 'fa-moon');
+            }
+        });
+        
+        // شروع با اولین کارت
+        showCard();
+    </script>
+</body>
+</html>
